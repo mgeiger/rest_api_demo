@@ -20,7 +20,7 @@ logging.basicConfig(
 logger = logging.getLogger(__file__)
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='module', autouse=True)
 def backed_up_database():
     """
     Attempts to preserve the database given with this sample code.
@@ -42,41 +42,46 @@ def backed_up_database():
     p_back.unlink()
 
 
-@pytest.fixture(scope='session', autouse=True)
+@pytest.fixture(scope='module', autouse=True)
 @pytest.mark.usefixtures('backed_up_database')
-def running_server(backed_up_database):
+def running_server(request, backed_up_database):
     """
     Start up the Flask rest_api_demo server
 
+    :param request: Pytest context
     :param backed_up_database: Pytest Fixture to ensure we backup the DB first
     """
     # This should be in a configuration somewhere
     p = Path(__file__).parents[2] / 'rest_api_demo/app.py'
-    logger.debug("Starting Flask Server")
-    process = subprocess.Popen(
-        [sys.executable, str(p)], 
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
-    )
-    # TODO: What happens when the server is already running
-    time.sleep(5)  # Startup Server
-    
-    # Ensure HTTP port is open
-    s = None
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        assert not s.connect_ex(('localhost', HTTP_PORT))
-    finally:
-        if s:
-            s.close()
-    
-    yield
+    logger.debug(f"Starting Flask Server.")
+    # Get the module name to write out server data
+    module_name = os.path.splitext(os.path.basename(request.node.name))[0]
+    server_log_file = f"server_{module_name}.out"
+    with open(server_log_file, 'w') as f:
+        process = subprocess.Popen(
+            [sys.executable, str(p)], 
+            stdout=f,
+            stderr=subprocess.DEVNULL
+        )
+        # TODO: What happens when the server is already running
+        time.sleep(1)  # Startup Server
+        
+        # Ensure HTTP port is open
+        s = None
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            assert not s.connect_ex(('localhost', HTTP_PORT))
+        finally:
+            if s:
+                s.close()
+        
+        yield
 
-    logger.debug("Terminating Flask Server")
-    # Ensure the port is closed
-    p = psutil.Process(process.pid)
-    p.terminate()
-    time.sleep(5)  # Shut down server
+        logger.debug("Terminating Flask Server")
+        # Ensure the port is closed
+        p = psutil.Process(process.pid)
+        p.terminate()
+        time.sleep(1)  # Shut down server
 
     # Ensure HTTP port is open
     s = None
