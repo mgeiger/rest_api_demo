@@ -16,7 +16,7 @@ get_schema = [{
 
 
 # Happy Path Testing
-def test_get_blog_categories_basic():
+def test_get_blog_categories_response():
     """
     Ensures that we can retrieve data about categories
     """

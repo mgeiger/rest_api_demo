@@ -7,7 +7,7 @@ import requests
 URL = "http://localhost:8888/api/blog/categories/"
 
 
-def test_post_blog_categories():
+def test_post_blog_categories_response():
     """
     Ensures that we can post a new Blog Category and return the correct status code
     """
@@ -32,4 +32,4 @@ def test_post_blog_categories_query():
     # Verify that our information is there
     response_get = requests.get(url=URL)
     category_names = [item['name'] for item in response_get.json()]
-    assert category_names in category_names, f"Category {category_name} not found in {category_names}"
+    assert category_name in category_names, f"Category {category_name} not found in {category_names}"

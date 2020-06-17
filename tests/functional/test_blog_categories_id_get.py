@@ -29,7 +29,7 @@ def available_ids():
 
 # Happy Path Testing
 # TODO: Set this up with parametrize indirect/pytest_generate_tests
-def test_get_blog_categories_id():
+def test_get_blog_categories_id_response():
     """
     Ensures that each of the available IDs gets a response
     """

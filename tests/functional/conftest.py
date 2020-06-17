@@ -56,7 +56,7 @@ def running_server(request, backed_up_database):
     logger.debug(f"Starting Flask Server.")
     # Get the module name to write out server data
     module_name = os.path.splitext(os.path.basename(request.node.name))[0]
-    server_log_file = f"server_{module_name}.out"
+    server_log_file = f"server_{module_name}.log"
     with open(server_log_file, 'w') as f:
         process = subprocess.Popen(
             [sys.executable, str(p)], 
