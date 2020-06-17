@@ -40,6 +40,20 @@ def test_put_blog_posts_id(id, field):
     assert updated_value != original_value
 
 
-@pytest.mark.skip(msg="Not Implemented")
-def test_put_blog_posts_id_max_values():
-    pass
+@pytest.mark.parametrize('id', IDS)
+def test_put_blog_posts_not_found(id):
+    url = f"{URL}{id}"
+    # Get the original data
+    original_response = requests.get(url)
+    assert original_response.status_code == 200, f"Original value did not return 200, returned {original_response.status_code}: {original_response.text}"
+    
+    # Determine what is avaialable categories
+    response = requests.get("http://localhost:8888/api/blog/categories/")
+    category_ids = [item['id'] for item in response.json()]
+    new_category_id = max(category_ids) + 100
+
+    # Update
+    data = copy.deepcopy(original_response.json())
+    data['category_id'] = new_category_id
+    response = requests.put(url, json=data)
+    assert response.status_code == 404

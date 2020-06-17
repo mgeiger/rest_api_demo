@@ -27,7 +27,6 @@ def test_get_blog_categories_response():
 
 
 @pytest.mark.xfail(reason="FIXME: Schema Validation Not Working on GET")
-@pytest.mark.depends(on=['test_get_blog_categories_basic'])
 def test_get_blog_categories_schema():
     """
     Ensures the schema matches properly
@@ -36,7 +35,6 @@ def test_get_blog_categories_schema():
     jsonschema.validate(instance=response.json(), schema=get_schema)
 
 
-@pytest.mark.depends(on=['test_get_blog_categories_basic'])
 def test_get_blog_categories_list():
     """
     Ensures that we return a list from the query

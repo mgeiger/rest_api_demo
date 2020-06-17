@@ -38,7 +38,6 @@ def test_get_blog_categories_id_response():
         assert response.status_code == 200
 
 
-@pytest.mark.depends(on=['test_get_blog_categories_id'])
 def test_get_blog_categories_id_schema():
     """
     Ensures that each of the available IDs has the correct schema
